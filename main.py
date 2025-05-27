@@ -1,6 +1,7 @@
 from tkinter import Tk
 
 from view.login_view import LoginView
+from view.register_view import RegisterView
 from utils.window_utils import center_window
 from view.home_secretary_view import SecretaryView
 
@@ -13,5 +14,6 @@ if __name__ == "__main__":
 
     root.configure(bg=BACKGROUND_COLOR)
 
-    app = SecretaryView(root)
+    # app = RegisterView(root)
+    app = LoginView(root)
     root.mainloop()
