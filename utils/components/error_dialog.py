@@ -13,11 +13,14 @@ class ErrorDialog(tk.Toplevel):
         center_window(self, 300, 150) 
         self.grab_set()
 
-        label = tk.Label(self, text=message, bg=FRAME_COLOR, fg=TEXT_COLOR, font=(FONT_FAMILY, FONT_SIZE))
-        label.pack(pady=20, padx=10)
+        container = tk.Frame(self, bg=FRAME_COLOR)
+        container.pack(expand=True)
+
+        label = tk.Label(container, text=message, bg=FRAME_COLOR, fg=TEXT_COLOR, font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD))
+        label.pack(pady=(0, 15), padx=10)
 
         button = tk.Button(
-            self,
+            container,
             text="OK",
             bg=BUTTON_COLOR,
             fg=TEXT_COLOR,
@@ -25,7 +28,7 @@ class ErrorDialog(tk.Toplevel):
             relief="flat",
             command=self.destroy
         )
-        button.pack(pady=(0, 20), ipadx=10)
+        button.pack(ipadx=10)
 
         button.bind("<Enter>", lambda e: button.config(bg=BUTTON_HOVER_COLOR))
         button.bind("<Leave>", lambda e: button.config(bg=BUTTON_COLOR))

@@ -1,7 +1,9 @@
 from database.models import get_user_by_email
 from utils.password import check_password
-from tkinter import messagebox
 from utils.components.error_dialog import ErrorDialog
+from view.home_admin_view import AdminView
+from view.home_secretary_view import SecretaryView
+from view.home_coordinator_view import CoordinatorView
 
 class LoginController:
     @staticmethod
@@ -14,7 +16,10 @@ class LoginController:
         if not check_password(password, user["password_hash"]):
             ErrorDialog(master, title="Erro de Login", message="Senha incorreta.")
             return
-
-        # Login bem-sucedido
-        messagebox.showinfo("Sucesso", f"Bem-vindo, {user['role'].capitalize()}!")
-        # Aqui você pode redirecionar para a próxima tela com base no tipo de usuário
+  
+        if user["role"] == "admin":
+            AdminView(master)
+        elif user["role"] == "secretary":
+            SecretaryView(master)
+        elif user["role"] == "coordinator":
+            CoordinatorView(master)
