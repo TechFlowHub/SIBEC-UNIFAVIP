@@ -14,6 +14,9 @@ if __name__ == "__main__":
 
     root.configure(bg=BACKGROUND_COLOR)
 
-    app = RegisterView(root)
+    # app = RegisterView(root)
     # app = LoginView(root)
+
+    app = SecretaryView(root)
+    
     root.mainloop()
