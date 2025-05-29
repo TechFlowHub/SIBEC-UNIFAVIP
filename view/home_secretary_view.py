@@ -143,7 +143,7 @@ class SecretaryView:
 
     def normalize_label(self, label):
         mapping = {
-            "Ano da concessão": "grant_year",
+            "Ano da concessão": "concession_year",
             "Código da IES": "ies_code",
             "Nome da IES": "ies_name",
             "Município": "city",
@@ -163,7 +163,7 @@ class SecretaryView:
         return mapping.get(label, label.lower().replace(" ", "_"))
 
     def validate_data(self, data):
-        required_fields = ["grant_year", "ies_code", "ies_name", "city", "campus",
+        required_fields = ["concession_year", "ies_code", "ies_name", "city", "campus",
                         "scholarship_type", "education_mode", "course", "shift",
                         "beneficiary_cpf", "gender", "race", "birth_date",
                         "region", "state", "beneficiary_city"]
@@ -173,7 +173,7 @@ class SecretaryView:
                 raise ValueError(f"O campo '{field}' é obrigatório.")
 
         # Ano como número
-        if not data["grant_year"].isdigit():
+        if not data["concession_year"].isdigit():
             raise ValueError("O ano da concessão deve ser numérico.")
 
         # CPF simples
@@ -264,13 +264,20 @@ class SecretaryView:
         if not selected:
             ErrorDialog(self.root, message="Selecione um registro para atualizar.")
             return
+
         try:
-            item = self.tree.item(selected[0])
-            scholarship_id = item['values'][0]
+            scholarship_id = int(selected[0]) 
+
             data = self.get_form_data()
             self.validate_data(data)
-            self.controller.update_scholarship(scholarship_id, data)
-            self.refresh_table()
+
+            sucesso = self.controller.update_scholarship(scholarship_id, data)
+            if sucesso:
+                self.refresh_table()
+                self.clear_form()
+                messagebox.showinfo("Sucesso", "Bolsa atualizada com sucesso!")
+            else:
+                ErrorDialog(self.root, message="Erro ao atualizar a bolsa.")
         except ValueError as ve:
             ErrorDialog(self.root, message=str(ve))
         except Exception as e:
@@ -286,7 +293,7 @@ class SecretaryView:
         if not confirm:
             return
 
-        scholarship_id = selected[0]  # O iid é o id
+        scholarship_id = selected[0]
         self.controller.delete_scholarship(scholarship_id)
         self.refresh_table()
         self.clear_form()
@@ -299,8 +306,9 @@ class SecretaryView:
 
         rows = self.controller.get_all_scholarships()
         for row in rows:
-            scholarship_id = row[0]      # row[0] é o ID
-            visible_values = row[1:]     # Pula o ID, pega só os dados visíveis
+            scholarship_id = row[0]    
+
+            visible_values = row[1:]     
             self.tree.insert("", tk.END, iid=scholarship_id, values=visible_values)
 
 
@@ -312,3 +320,8 @@ class SecretaryView:
                 widget.set_date(datetime.today())
             else:
                 widget.delete(0, tk.END)
+
+        # Remove qualquer seleção na tabela
+        selected = self.tree.selection()
+        for item in selected:
+            self.tree.selection_remove(item)

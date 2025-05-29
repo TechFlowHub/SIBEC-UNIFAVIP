@@ -23,9 +23,9 @@ if __name__ == "__main__":
     root.configure(bg=BACKGROUND_COLOR)
 
     # Exibe a tela desejada
-    # app = LoginView(root)
+    app = LoginView(root)
     # app = RegisterView(root)
-    app = SecretaryView(root, secretary_controller)
+    # app = SecretaryView(root, secretary_controller)
 
     # Inicia o loop da interface
     root.mainloop()

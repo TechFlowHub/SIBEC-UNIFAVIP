@@ -24,18 +24,32 @@ class SecretaryController:
             raise Exception(f"Erro no banco de dados: {err}")
 
     def update_scholarship(self, scholarship_id, data):
+
         query = """
             UPDATE scholarship SET
-                grant_year=%s, ies_code=%s, ies_name=%s, city=%s, campus=%s, scholarship_type=%s,
+                concession_year=%s, ies_code=%s, ies_name=%s, city=%s, campus=%s, scholarship_type=%s,
                 education_mode=%s, course=%s, shift=%s, beneficiary_cpf=%s, gender=%s, race=%s,
                 birth_date=%s, has_disability=%s, region=%s, state=%s, beneficiary_city=%s
             WHERE id=%s
         """
         values = list(data.values())
-        values[13] = True if values[13].lower() == "sim" else False
-        values.append(scholarship_id)
-        self.cursor.execute(query, values)
-        self.conn.commit()
+
+        try:
+            if isinstance(values[13], str):
+                values[13] = True if values[13].strip().lower() == "sim" else False
+            elif isinstance(values[13], bool):
+                pass
+            else:
+                raise ValueError("Valor inválido para has_disability: deve ser 'Sim' ou 'Não'.")
+
+            values.append(scholarship_id)
+
+            self.cursor.execute(query, values)
+            self.conn.commit()
+
+            return self.cursor.rowcount > 0
+        except Exception as e:
+            return False
 
     def get_scholarship_by_id(self, scholarship_id):
         cursor = self.conn.cursor()
