@@ -15,6 +15,7 @@ if __name__ == "__main__":
 
     # Cria a janela principal
     root = Tk()
+    root.resizable(False, False)
     center_window(root, 1280, 720)
     root.configure(bg=BACKGROUND_COLOR)
 
