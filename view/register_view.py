@@ -15,7 +15,7 @@ class RegisterUserView(tk.Toplevel):
         center_window(self, width=500, height=300)
 
         # Título da janela
-        title = tk.Label(self, text="Cadastro de Usuário", bg=FRAME_COLOR, fg="#2c3e50",
+        title = tk.Label(self, text="Cadastro de Usuário", bg=FRAME_COLOR, fg=TEXT_COLOR,
                          font=(FONT_FAMILY, FONT_SIZE + 4, FONT_BOLD))
         title.pack(pady=(20, 10))
 
@@ -24,7 +24,7 @@ class RegisterUserView(tk.Toplevel):
         form_frame.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
 
         # Nome de usuário
-        tk.Label(form_frame, text="Usuário (antes do @code.com):", bg="#ecf0f1", fg="#2c3e50",
+        tk.Label(form_frame, text="Usuário (antes do @1775.com):", bg="#ecf0f1", fg="#2c3e50",
                  font=(FONT_FAMILY, FONT_SIZE)).grid(row=0, column=0, sticky="w", pady=5)
         self.username_entry = tk.Entry(form_frame, font=(FONT_FAMILY, FONT_SIZE), bd=2, relief="groove")
         self.username_entry.grid(row=0, column=1, pady=5, padx=5)
@@ -54,7 +54,7 @@ class RegisterUserView(tk.Toplevel):
 
     def register_user(self):
         username = self.username_entry.get().strip()
-        email = f"{username}@code.com"
+        email = f"{username}@1775.com"
         password = "1234"
         role_pt = self.role_combobox.get()
 
