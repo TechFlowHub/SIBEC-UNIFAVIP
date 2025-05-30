@@ -1,27 +1,24 @@
-from database.models import create_user
 from utils.password import hash_password
-from utils.components.error_dialog import ErrorDialog
-from view.home_admin_view import AdminView
-from view.home_secretary_view import SecretaryView
-from view.home_coordinator_view import CoordinatorView
+from tkinter import messagebox
 
 class RegisterController:
-    @staticmethod
-    def register(name, email, password, role, master):
-        if not name or not email or not password or not role:
-            ErrorDialog(master, title="Erro de Registro", message="Todos os campos são obrigatórios.")
-            return
+    def __init__(self, conn, root=None):
+        self.conn = conn
+        self.cursor = self.conn.cursor()
+        self.root = root  # só se quiser usar para messagebox ou views
 
-        hashed_password = hash_password(password)
+    def register_user_controller(self, email, password, role):
         try:
-            create_user(name, email, hashed_password, role)
+            password_hash = hash_password(password)
+            query = "INSERT INTO users (email, password_hash, role) VALUES (%s, %s, %s)"
+            self.cursor.execute(query, (email, password_hash, role))
+            self.conn.commit()
 
-            if role == "secretary":
-                SecretaryView(master)
-            elif role == "admin":
-                AdminView(master)
-            elif role == "coordinator":
-                CoordinatorView(master)
-            
+            if self.root:
+                messagebox.showinfo("Sucesso", "Usuário cadastrado com sucesso!")
+            # aqui pode chamar outra view/controller se quiser
         except Exception as e:
-            ErrorDialog(master, title="Erro de Registro", message=str(e))
+            if self.root:
+                messagebox.showerror("Erro", f"Erro ao cadastrar usuário: {e}")
+            else:
+                raise

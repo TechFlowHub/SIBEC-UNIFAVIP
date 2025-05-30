@@ -1,82 +1,71 @@
 import tkinter as tk
-from utils.styles import FRAME_COLOR, BUTTON_COLOR, BUTTON_HOVER_COLOR, TEXT_COLOR, FONT_FAMILY, FONT_SIZE, FONT_BOLD
-from controller.register_controller import RegisterController
+from tkinter import ttk, messagebox
+from utils.styles import FRAME_COLOR, TEXT_COLOR, FONT_FAMILY, FONT_SIZE, FONT_BOLD
+from utils.window_utils import center_window
+from controller.register_controller import RegisterController 
 
-class RegisterView:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Registro de Usuário")
-        
-        self.frame = tk.Frame(master, bg=FRAME_COLOR, padx=50, pady=45)
-        self.frame.place(relx=0.5, rely=0.5, anchor="center")
-        
-        self.label_name = tk.Label(self.frame, text="Nome Completo", fg=TEXT_COLOR, bg=FRAME_COLOR,
-                                    font=(FONT_FAMILY, FONT_SIZE - 1, FONT_BOLD))
-        self.label_name.pack(anchor="w", pady=(0,5))
-        
-        self.name_entry = tk.Entry(self.frame, font=(FONT_FAMILY, FONT_SIZE - 1), width=45)
-        self.name_entry.pack(pady=(0, 15), ipady=4)
-        
-        self.label_email = tk.Label(self.frame, text="Email ( institucional do sistema )", fg=TEXT_COLOR, bg=FRAME_COLOR,
-                                    font=(FONT_FAMILY, FONT_SIZE - 1, FONT_BOLD))
-        self.label_email.pack(anchor="w", pady=(0,5))
-        
-        self.email_entry = tk.Entry(self.frame, font=(FONT_FAMILY, FONT_SIZE - 1), width=45)
-        self.email_entry.pack(pady=(0, 15), ipady=4)
-        
-        self.label_password = tk.Label(self.frame, text="Senha", fg=TEXT_COLOR, bg=FRAME_COLOR,
-                                        font=(FONT_FAMILY, FONT_SIZE - 1, FONT_BOLD))
-        self.label_password.pack(anchor="w", pady=(0,5))
-        
-        self.password_entry = tk.Entry(self.frame, show="*", font=(FONT_FAMILY, FONT_SIZE - 1), width=45)
-        self.password_entry.pack(pady=(0, 15), ipady=4)
-        
-        self.label_role = tk.Label(self.frame, text="Função", fg=TEXT_COLOR, bg=FRAME_COLOR,
-                                    font=(FONT_FAMILY, FONT_SIZE - 1, FONT_BOLD))
-        self.label_role.pack(anchor="w", pady=(0,5))
-        
-        self.role_var = tk.StringVar(value="Selecione uma função")
-        self.role_options = ["secretary", "coordinator", "admin"]
-        self.role_menu = tk.OptionMenu(self.frame, self.role_var, *self.role_options)
-        
-        self.role_menu.config(bg=FRAME_COLOR, fg=TEXT_COLOR, font=(FONT_FAMILY, FONT_SIZE - 1))
-        self.role_menu.pack(pady=(0, 15), ipady=4)
-        
-        self.btn_register = tk.Button(
-            self.frame, 
-            text="Registrar", 
-            bg=BUTTON_COLOR, 
-            fg=TEXT_COLOR,
-            font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD), 
-            relief="flat",
-            command=self.register_user)
-        self.btn_register.pack(fill="x")
-        
-        self.btn_register = tk.Button(
-            self.frame, 
-            text="Limpar Campos", 
-            bg="#7f8c8d",
-            fg=TEXT_COLOR,
-            font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD), 
-            relief="flat",
-            command=self.clear_fields)
-        self.btn_register.pack(fill="x", pady=(10, 0))
-        
-        self.btn_register.bind("<Enter>", lambda e: self.btn_register.config(bg=BUTTON_HOVER_COLOR))
-        self.btn_register.bind("<Leave>", lambda e: self.btn_register.config(bg=BUTTON_COLOR))
-        
-    def clear_fields(self):
-        self.name_entry.delete(0, tk.END)
-        self.email_entry.delete(0, tk.END)
-        self.password_entry.delete(0, tk.END)
-        self.role_var.set("secretary")
+class RegisterUserView(tk.Toplevel):
+    def __init__(self, parent, conn):
+        super().__init__(parent)
+        self.controller = RegisterController(conn, root=self)
+        self.title("Cadastrar Usuário")
+        self.configure(bg=FRAME_COLOR)
+        self.resizable(False, False)
+
+        center_window(self, width=500, height=300)
+
+        # Título da janela
+        title = tk.Label(self, text="Cadastro de Usuário", bg=FRAME_COLOR, fg="#2c3e50",
+                         font=(FONT_FAMILY, FONT_SIZE + 4, FONT_BOLD))
+        title.pack(pady=(20, 10))
+
+        # Frame com borda e padding
+        form_frame = tk.Frame(self, bg="#ecf0f1", bd=2, relief="groove", padx=20, pady=20)
+        form_frame.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+        # Nome de usuário
+        tk.Label(form_frame, text="Usuário (antes do @code.com):", bg="#ecf0f1", fg="#2c3e50",
+                 font=(FONT_FAMILY, FONT_SIZE)).grid(row=0, column=0, sticky="w", pady=5)
+        self.username_entry = tk.Entry(form_frame, font=(FONT_FAMILY, FONT_SIZE), bd=2, relief="groove")
+        self.username_entry.grid(row=0, column=1, pady=5, padx=5)
+
+        # Senha
+        tk.Label(form_frame, text="Senha:", bg="#ecf0f1", fg="#2c3e50",
+                 font=(FONT_FAMILY, FONT_SIZE)).grid(row=1, column=0, sticky="w", pady=5)
+        self.password_entry = tk.Entry(form_frame, font=(FONT_FAMILY, FONT_SIZE), bd=2, relief="groove")
+        self.password_entry.insert(0, "1234")
+        self.password_entry.config(state="disabled")
+        self.password_entry.grid(row=1, column=1, pady=5, padx=5)
+
+        # Função (Role)
+        tk.Label(form_frame, text="Função:", bg="#ecf0f1", fg="#2c3e50",
+                 font=(FONT_FAMILY, FONT_SIZE)).grid(row=2, column=0, sticky="w", pady=5)
+        self.role_combobox = ttk.Combobox(form_frame, font=(FONT_FAMILY, FONT_SIZE),
+                                          values=["Coordenador", "Secretário"], state="readonly")
+        self.role_combobox.grid(row=2, column=1, pady=5, padx=5)
+        self.role_combobox.set("Selecione")
+
+        # Botão de cadastro
+        submit_btn = tk.Button(self, text="Cadastrar", bg="#27ae60", fg="white",
+                               font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD), padx=20, pady=10,
+                               activebackground="#2ecc71", activeforeground="white",
+                               command=self.register_user)
+        submit_btn.pack(pady=15)
 
     def register_user(self):
-        name = self.name_entry.get()
-        email = self.email_entry.get()
-        password = self.password_entry.get()
-        role = self.role_var.get()
-        RegisterController.register(name, email, password, role, self.master)
+        username = self.username_entry.get().strip()
+        email = f"{username}@code.com"
+        password = "1234"
+        role_pt = self.role_combobox.get()
 
-    def show_success_message(self, message):
-        tk.messagebox.showinfo("Sucesso", message)
+        role_map = {
+            "Coordenador": "coordinator",
+            "Secretário": "secretary"
+        }
+        role = role_map.get(role_pt)
+
+        if not username or role_pt == "Selecione":
+            messagebox.showwarning("Campos obrigatórios", "Preencha todos os campos.")
+            return
+
+        self.controller.register_user_controller(email=email, password=password, role=role)

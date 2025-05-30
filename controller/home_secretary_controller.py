@@ -1,9 +1,19 @@
 import mysql.connector
+from view.home_secretary_view import SecretaryView
+from view.register_view import RegisterUserView
 
 class SecretaryController:
-    def __init__(self, connection):
+    def __init__(self, root, connection):
+        self.root = root
         self.conn = connection
         self.cursor = self.conn.cursor()
+
+    def show_secretary_view(self):
+        SecretaryView(self.root, self)
+
+    def show_register_user_view(self):
+        RegisterUserView(self.root, self.conn)
+
 
     def insert_scholarship(self, data):
         try:

@@ -13,7 +13,7 @@ class LoginController:
     def login(email, password, master):
         user = get_user_by_email(email)
         conn = get_connection()
-        secretary_controller = SecretaryController(conn)
+        secretary_controller = SecretaryController(master, conn)
         
         if user is None:
             ErrorDialog(master, title="Erro de Login", message="Email incorreto.")
