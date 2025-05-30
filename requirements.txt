@@ -2,3 +2,4 @@ bcrypt
 mysql-connector-python
 screeninfo
 tkcalendar
+pandas

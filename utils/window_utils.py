@@ -1,7 +1,7 @@
 from screeninfo import get_monitors
 
 def center_window(root, width=800, height=600):
-    monitor = get_monitors()[1]
+    monitor = get_monitors()[0]
 
     screen_width = monitor.width
     screen_height = monitor.height
