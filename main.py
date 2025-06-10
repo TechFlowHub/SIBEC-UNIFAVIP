@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # Cria a janela principal
     root = Tk()
     root.resizable(False, False)
-    center_window(root, 1280, 720)
+    center_window(root, 1400, 900)  # Define o tamanho da janela
     root.configure(bg=BACKGROUND_COLOR)
 
     # Instancia o controller com a conexão
