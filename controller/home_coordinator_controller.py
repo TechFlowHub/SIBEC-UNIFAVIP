@@ -4,57 +4,54 @@ class CoordinatorControler:
     def __init__(self, root, connection):
         self.root = root
         self.conn = connection
-        self.cursor = self.conn.cursor(dictionary=True)
-    
-    def get_scholarship_by_type(self):
-        query = """
-            SELECT scholarship_type, COUNT(*) as count
-            FROM scholarship
-            GROUP BY scholarship_type
-            ORDER BY count DESC
+        # The cursor is best created per execution to ensure thread safety
+        # and prevent issues with stale cursors.
+
+    def get_aggregated_data(self, group_by_column, filters=None, limit=None):
         """
-        self.cursor.execute(query)
-        result = self.cursor.fetchall()
-        
-        df = pd.DataFrame(result)
-        return df
-        
-    def get_scholarship_by_course(self):
-        query = """
-            SELECT course, COUNT(*) as count
-            FROM scholarship
-            GROUP BY course
-            ORDER BY count DESC
-            LIMIT 15
+        Fetches and aggregates scholarship data based on specified columns and filters.
+
+        Args:
+            group_by_column (str): The column to group the data by (e.g., 'race', 'course').
+            filters (dict, optional): A dictionary of filters to apply (e.g., {'gender': 'Feminino'}).
+                                      Defaults to None.
+            limit (int, optional): The maximum number of records to return. Defaults to None.
+
+        Returns:
+            pd.DataFrame: A DataFrame with the aggregated data.
         """
-        self.cursor.execute(query)
-        result = self.cursor.fetchall()
-        
-        df = pd.DataFrame(result)
-        return df
-        
-    def get_scholarship_by_gender(self):
-        query = """
-            SELECT gender, COUNT(*) as count
+        query = f"""
+            SELECT {group_by_column}, COUNT(*) as count
             FROM scholarship
-            GROUP BY gender
-            ORDER BY count DESC
         """
-        self.cursor.execute(query)
-        result = self.cursor.fetchall()
         
-        df = pd.DataFrame(result)
-        return df
+        params = []
+        if filters:
+            # Add a WHERE clause if filters are provided
+            where_clauses = []
+            for key, value in filters.items():
+                where_clauses.append(f"{key} = %s")
+                params.append(value)
+            query += " WHERE " + " AND ".join(where_clauses)
+            
+        query += f" GROUP BY {group_by_column} ORDER BY count DESC"
         
-    def get_scholarship_by_race(self):
-        query = """
-            SELECT race, COUNT(*) as count
-            FROM scholarship
-            GROUP BY race
-            ORDER BY count DESC
-        """
-        self.cursor.execute(query)
-        result = self.cursor.fetchall()
+        if limit:
+            query += f" LIMIT {int(limit)}" # Use int() for safety, though not for values
+
+        # Use a new cursor for each execution
+        cursor = self.conn.cursor(dictionary=True)
+        cursor.execute(query, params)
+        result = cursor.fetchall()
+        cursor.close()
         
-        df = pd.DataFrame(result)
-        return df
+        return pd.DataFrame(result) if result else pd.DataFrame(columns=[group_by_column, 'count'])
+
+    def get_distinct_values(self, column):
+        """Fetches distinct values for a given column to populate filters."""
+        query = f"SELECT DISTINCT {column} FROM scholarship ORDER BY {column}"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        result = [row[0] for row in cursor.fetchall()]
+        cursor.close()
+        return result
