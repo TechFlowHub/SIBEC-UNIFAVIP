@@ -84,3 +84,11 @@ class SecretaryController:
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
+    def logout(self):
+        # Import LoginView here to avoid circular imports
+        from view.login_view import LoginView
+        
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.root.update_idletasks()
+        self.login_view = LoginView(self.root)

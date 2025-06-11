@@ -27,19 +27,24 @@ class SecretaryView:
         nav_frame.pack(fill=tk.X)
 
         home_btn = tk.Button(nav_frame, text="Home", bg="#2c3e50", fg="white", bd=0,
-                             font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD),
-                             command=lambda: controller.show_secretary_view())
+                                font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD),
+                                command=lambda: controller.show_secretary_view())
         home_btn.pack(side=tk.LEFT, padx=40, pady=10)
 
         new_user_btn = tk.Button(nav_frame, text="Cadastrar novo usuário", bg="#2c3e50", fg="white", bd=0,
-                                 font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD),
-                                 command=lambda: controller.show_register_user_view())
+                                font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD),
+                                command=lambda: controller.show_register_user_view())
         new_user_btn.pack(side=tk.LEFT, padx=10, pady=10)
 
         my_user_btn = tk.Button(nav_frame, text="Meus dados", bg="#2c3e50", fg="white", bd=0,
-                                 font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD),
-                                 command=lambda: controller.show_register_user_view())
+                                font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD),
+                                command=lambda: controller.show_register_user_view())
         my_user_btn.pack(side=tk.LEFT, padx=40, pady=10)
+        
+        logout_btn = tk.Button(parent, text="Sair", bg="#d9534f", fg="white", bd=0,
+                                font=(FONT_FAMILY, FONT_SIZE, FONT_BOLD),
+                                command=lambda: controller.logout())
+        logout_btn.pack(side=tk.RIGHT, padx=20, pady=10)
 
         # Formulário
         form_container = tk.Frame(paned, bg=FRAME_COLOR, pady=20, padx=20)
